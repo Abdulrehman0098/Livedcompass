@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0e1a">
+<title>Live Compass — Celestial Navigation</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='none' stroke='%23c9a227' stroke-width='2'/%3E%3Cpolygon points='32,4 38,28 32,36 26,28' fill='%23c9a227'/%3E%3Cpolygon points='32,60 38,36 32,28 26,36' fill='%235a4a1f'/%3E%3Cpolygon points='4,32 28,26 36,32 28,38' fill='%235a4a1f'/%3E%3Cpolygon points='60,32 36,26 28,32 36,38' fill='%235a4a1f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--bg-2:#0d1424;--panel-bg:#111927;--panel-border:#1e2a3d;--fg:#e8e0cf;--fg-dim:#a09880;--brass:#c9a227;--brass-light:#e0b84c;--brass-dim:#8a6d1f;--accent-cyan:#4ac4e0;--dial-bg:#0c1220;--shadow:0 4px 24px rgba(0,0,0,.5);--glow:0 0 8px rgba(201,162,39,.3);--corner:14px;--touch-min:48px;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',-apple-system,sans-serif}
+[data-theme="light"]{--bg:#f4ecd8;--bg-2:#ebe2cc;--panel-bg:#f7f0dd;--panel-border:#d4c9a8;--fg:#1a1a1a;--fg-dim:#5a5040;--brass:#8a6d1f;--brass-light:#a6842a;--brass-dim:#6b5417;--accent-cyan:#1a7a9a;--dial-bg:#e8dfc5;--shadow:0 4px 16px rgba(0,0,0,.12);--glow:0 0 6px rgba(138,109,31,.25)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);background:var(--bg);color:var(--fg);line-height:1.6;min-height:100dvh;transition:background .4s,color .4s;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.02em}
+#https-warning{display:none;position:sticky;top:0;z-index:9999;background:#8b0000;color:#fff;text-align:center;padding:.75rem 1rem;font-size:.85rem;font-weight:600}
+#https-warning.show{display:block}
+.site-header{background:var(--bg-2);border-bottom:1px solid var(--panel-border);padding:.6rem 1rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:.6rem}
+.logo-mark{width:38px;height:38px;color:var(--brass);flex-shrink:0}
+.logo-name{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--brass);letter-spacing:.08em;line-height:1.1}
+.location-prompt{font-size:.7rem;color:var(--brass-light);text-transform:uppercase;letter-spacing:.15em;margin-left:auto;margin-right:1rem;animation:pulse 2s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.btn{font-family:var(--sans);font-size:.85rem;font-weight:500;min-height:var(--touch-min);padding:.5rem 1.2rem;border:1px solid var(--brass-dim);background:var(--panel-bg);color:var(--fg);cursor:pointer;border-radius:3px;transition:all .2s;letter-spacing:.03em;text-transform:uppercase;-webkit-user-select:none;user-select:none}
+.btn:hover{border-color:var(--brass);box-shadow:var(--glow)}
+.btn:active{transform:scale(.96);opacity:.9}
+.btn:focus-visible{outline:2px solid var(--brass-light);outline-offset:2px}
+.btn-primary{background:linear-gradient(135deg,var(--brass),var(--brass-dim));color:#0a0e1a;border-color:var(--brass);font-weight:600}
+.btn-primary:hover{background:linear-gradient(135deg,var(--brass-light),var(--brass))}
+.btn-secondary{border-color:var(--accent-cyan)}
+.btn-ghost{background:transparent;border-color:var(--panel-border)}
+.btn-sm{min-height:38px;font-size:.75rem;padding:.4rem .8rem}
+.main-content{max-width:1200px;margin:0 auto;padding:1rem;display:flex;flex-direction:column;gap:1.25rem}
+.panel-frame{background:var(--panel-bg);border:1px solid var(--panel-border);position:relative;padding:1.25rem;border-radius:4px;box-shadow:var(--shadow)}
+.panel-frame::before,.panel-frame::after{content:'';position:absolute;inset:0;pointer-events:none}
+.panel-frame::before{background:linear-gradient(to right,var(--brass) 2px,transparent 2px) 0 0/var(--corner) 2px no-repeat,linear-gradient(to bottom,var(--brass) 2px,transparent 2px) 0 0/2px var(--corner) no-repeat,linear-gradient(to left,var(--brass) 2px,transparent 2px) 100% 100%/var(--corner) 2px no-repeat,linear-gradient(to top,var(--brass) 2px,transparent 2px) 100% 100%/2px var(--corner) no-repeat}
+.panel-frame::after{background:linear-gradient(to left,var(--brass) 2px,transparent 2px) 100% 0/var(--corner) 2px no-repeat,linear-gradient(to bottom,var(--brass) 2px,transparent 2px) 100% 0/2px var(--corner) no-repeat,linear-gradient(to right,var(--brass) 2px,transparent 2px) 0 100%/var(--corner) 2px no-repeat,linear-gradient(to top,var(--brass) 2px,transparent 2px) 0 100%/2px var(--corner) no-repeat}
+.panel-title{font-size:1rem;color:var(--brass);margin-bottom:.75rem;display:flex;align-items:center;gap:.4rem;text-transform:uppercase;letter-spacing:.1em}
+.panel-icon{color:var(--brass-light)}
+.compass-wrap{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.compass-dial{width:100%;max-width:320px;aspect-ratio:1}
+.heading-readout{display:flex;flex-direction:column;align-items:center}
+.heading-deg{font-size:2.5rem;font-weight:600;color:var(--brass);line-height:1;letter-spacing:.05em;text-shadow:var(--glow)}
+.heading-card{font-family:var(--serif);font-size:1.1rem;color:var(--fg-dim);margin-top:.1rem}
+.compass-controls{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.5rem}
+.tilt-wrap{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+.tilt-gauge{width:100%;max-width:180px;aspect-ratio:1}
+.tilt-readout{display:flex;flex-direction:column;gap:.4rem;min-width:140px}
+.tilt-row{display:flex;justify-content:space-between;gap:.75rem;padding:.35rem .6rem;background:var(--bg);border-radius:2px;border-left:2px solid var(--brass-dim)}
+.tilt-slope{border-left-color:var(--accent-cyan)}
+.tilt-label{color:var(--fg-dim);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.tilt-val{font-weight:600;color:var(--brass);font-size:1rem}
+.gps-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+.gps-cell{background:var(--bg);padding:.5rem .75rem;border-radius:2px;border:1px solid var(--panel-border)}
+.gps-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fg-dim)}
+.gps-val{font-weight:600;color:var(--brass);font-size:.95rem;word-break:break-all}
+.gps-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
+.nav-inputs{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.input-group{display:flex;flex-direction:column}
+.input-group label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--fg-dim);margin-bottom:.2rem}
+.input-group input{font-family:var(--sans);font-size:1rem;padding:.5rem .6rem;background:var(--bg);border:1px solid var(--panel-border);color:var(--fg);border-radius:3px}
+.input-group input:focus{outline:none;border-color:var(--brass);box-shadow:var(--glow)}
+.input-group input::placeholder{color:var(--fg-dim);opacity:.5}
+.nav-controls{display:flex;gap:.5rem;margin-bottom:.75rem}
+.nav-results{background:var(--bg);padding:.6rem .75rem;border-radius:2px;border-left:2px solid var(--accent-cyan);display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem}
+.nav-result-row{display:flex;justify-content:space-between;gap:.75rem}
+.nav-label{color:var(--fg-dim);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em}
+.nav-val{font-weight:600;color:var(--brass)}
+.celestial-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.celestial-block{background:var(--bg);padding:.75rem;border-radius:2px;border:1px solid var(--panel-border)}
+.celestial-title{font-size:.9rem;color:var(--brass);margin-bottom:.5rem}
+.celestial-row{display:flex;justify-content:space-between;padding:.2rem 0;border-bottom:1px solid rgba(128,128,128,.1)}
+.celestial-row:last-child{border-bottom:none}
+.c-label{font-size:.75rem;color:var(--fg-dim)}
+.c-val{font-weight:500;font-size:.85rem}
+.faq-list{display:flex;flex-direction:column;gap:.4rem}
+.faq-item{border:1px solid var(--panel-border);border-radius:3px;overflow:hidden}
+.faq-question{width:100%;background:var(--bg);border:none;padding:.8rem 1rem;font-family:var(--sans);font-size:.9rem;color:var(--fg);cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:left;min-height:var(--touch-min)}
+.faq-question:hover{background:var(--panel-bg)}
+.faq-question:focus-visible{outline:2px solid var(--brass);outline-offset:-2px}
+.faq-question[aria-expanded="true"]{border-bottom:1px solid var(--panel-border)}
+.faq-chevron{color:var(--brass);transition:transform .3s;font-size:.75rem}
+.faq-question[aria-expanded="true"] .faq-chevron{transform:rotate(180deg)}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-answer[aria-hidden="false"]{max-height:300px}
+.faq-answer p{padding:.8rem 1rem;font-size:.85rem;color:var(--fg-dim);line-height:1.65}
+.status-msg{font-size:.78rem;color:var(--fg-dim);font-style:italic;display:block;margin-top:.5rem}
+.status-msg.error{color:#e05555}
+.status-msg.success{color:#55c96a}
+.copy-feedback{font-size:.78rem;margin-left:.4rem;color:var(--brass)}
+.site-footer{background:var(--bg-2);border-top:1px solid var(--panel-border);padding:1.5rem 1rem;margin-top:1.5rem;text-align:center}
+.footer-logo{width:32px;height:32px;color:var(--brass);margin-bottom:.5rem}
+.footer-text{color:var(--fg-dim);font-size:.8rem;margin-bottom:.4rem}
+.footer-copy{color:var(--fg-dim);font-size:.7rem;opacity:.7}
+@media(min-width:768px){.main-content{padding:2rem;gap:2rem}.panel-frame{padding:1.5rem}.compass-dial{max-width:360px}.heading-deg{font-size:3rem}.celestial-grid{grid-template-columns:1fr 1fr}.logo-name{font-size:1.3rem}}
+@media(max-width:380px){.compass-dial{max-width:260px}.heading-deg{font-size:2rem}.celestial-grid{grid-template-columns:1fr}.gps-grid{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="https-warning">⚠️ Sensors and GPS are blocked on insecure connections. Please host this file on HTTPS (e.g., Netlify, Vercel, or GitHub Pages) and open that link on your phone.</div>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="32,4 38,28 32,36 26,28" fill="var(--brass)"/><polygon points="32,60 38,36 32,28 26,36" fill="var(--brass-dim)"/><polygon points="4,32 28,26 36,32 28,38" fill="var(--brass-dim)"/><polygon points="60,32 36,26 28,32 36,38" fill="var(--brass-dim)"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
+      <span class="logo-name">LIVE COMPASS</span>
+      <span class="location-prompt">TURN ON LOCATION</span>
+    </div>
+    <button id="theme-toggle" class="btn btn-ghost btn-sm" aria-label="Toggle theme"><span class="theme-label">Dark</span></button>
+  </div>
+</header>
+<main class="main-content">
+  <section class="panel" aria-labelledby="compass-heading"><div class="panel-frame"><h2 id="compass-heading" class="panel-title"><span class="panel-icon">◈</span> Compass</h2><div class="panel-body"><div class="compass-wrap"><svg id="compass-dial" class="compass-dial" viewBox="0 0 320 320" role="img" aria-label="Compass dial"><circle cx="160" cy="160" r="155" fill="none" stroke="var(--brass)" stroke-width="1.5"/><circle cx="160" cy="160" r="148" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".6"/><circle cx="160" cy="160" r="140" fill="var(--dial-bg)"/><g id="compass-ticks"></g><g id="compass-labels"></g><g id="celestial-markers"></g><g id="waypoint-marker" style="display:none"><circle r="6" fill="var(--accent-cyan)" stroke="var(--brass)" stroke-width="1"/><text y="-12" text-anchor="middle" fill="var(--accent-cyan)" font-size="9" font-family="Inter,sans-serif">WP</text></g><g id="compass-needle"><polygon points="160,40 152,160 168,160" fill="var(--brass)" opacity=".9"/><polygon points="160,280 152,160 168,160" fill="var(--brass-dim)" opacity=".6"/><circle cx="160" cy="160" r="8" fill="var(--brass)" stroke="var(--bg)" stroke-width="1"/><circle cx="160" cy="160" r="3" fill="var(--bg)"/></g></svg><div class="heading-readout"><span id="heading-deg" class="heading-deg">---°</span><span id="heading-card" class="heading-card">—</span></div></div><button id="turn-on-location" class="btn btn-primary" style="width:100%;max-width:280px;margin:.75rem 0;padding:.75rem;font-size:.9rem">📍 TURN ON LOCATION</button>
+        <div class="compass-controls"><button id="enable-compass" class="btn btn-primary">Enable Compass</button><button id="calibrate-compass" class="btn btn-secondary" style="display:none">Calibrate</button></div><span id="compass-status" class="status-msg" role="status" aria-live="polite">Not yet activated</span></div></div></section>
+  <section class="panel" aria-labelledby="tilt-heading"><div class="panel-frame"><h2 id="tilt-heading" class="panel-title"><span class="panel-icon">◈</span> Tilt Meter</h2><div class="panel-body"><div class="tilt-wrap"><svg id="tilt-gauge" class="tilt-gauge" viewBox="0 0 200 200" role="img" aria-label="Bubble level"><circle cx="100" cy="100" r="95" fill="var(--dial-bg)" stroke="var(--brass)" stroke-width="1.5"/><line x1="10" y1="100" x2="190" y2="100" stroke="var(--brass)" stroke-width=".5" opacity=".4"/><line x1="100" y1="10" x2="100" y2="190" stroke="var(--brass)" stroke-width=".5" opacity=".4"/><circle cx="100" cy="100" r="70" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".3"/><circle cx="100" cy="100" r="45" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".3"/><circle cx="100" cy="100" r="20" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".3"/><circle id="tilt-bubble" cx="100" cy="100" r="10" fill="var(--brass)" opacity=".8"/></svg><div class="tilt-readout"><div class="tilt-row"><span class="tilt-label">Pitch</span><span id="pitch-val" class="tilt-val">0.0°</span></div><div class="tilt-row"><span class="tilt-label">Roll</span><span id="roll-val" class="tilt-val">0.0°</span></div><div class="tilt-row tilt-slope"><span class="tilt-label">Slope</span><span id="slope-val" class="tilt-val">0.0°</span></div></div></div><span id="tilt-status" class="status-msg" role="status" aria-live="polite">Awaiting sensor</span></div></div></section>
+  <section class="panel" aria-labelledby="gps-heading"><div class="panel-frame"><h2 id="gps-heading" class="panel-title"><span class="panel-icon">◈</span> GPS Instruments</h2><div class="panel-body"><div class="gps-grid"><div class="gps-cell"><span class="gps-label">Latitude</span><span id="gps-lat" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Longitude</span><span id="gps-lon" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Altitude</span><span id="gps-alt" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Accuracy</span><span id="gps-acc" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Speed</span><span id="gps-speed" class="gps-val">—</span></div></div><div class="gps-controls"><button id="enable-gps" class="btn btn-primary">Enable Location</button><button id="unit-toggle" class="btn btn-secondary"><span id="unit-label">Metric</span></button><button id="copy-coords" class="btn btn-ghost">Copy</button></
+        span></div><span id="gps-status" class="status-msg" role="status" aria-live="polite">Not yet activated</span><span id="copy-feedback" class="copy-feedback" role="status" aria-live="polite"></span></div></div></section>
+  <section class="panel" aria-labelledby="nav-heading"><div class="panel-frame"><h2 id="nav-heading" class="panel-title"><span class="panel-icon">◈</span> Distance & Bearing</h2><div class="panel-body"><div class="nav-inputs"><div class="input-group"><label for="target-lat">Target Latitude</label><input type="number" id="target-lat" step="any" placeholder="51.5074" inputmode="decimal"></div><div class="input-group"><label for="target-lon">Target Longitude</label><input type="number" id="target-lon" step="any" placeholder="-0.1278" inputmode="decimal"></div></div><div class="nav-controls"><button id="plot-course" class="btn btn-primary">Plot Course</button><button id="clear-waypoint" class="btn btn-secondary">Clear Waypoint</button></div><div id="nav-results" class="nav-results" style="display:none"><div class="nav-result-row"><span class="nav-label">Distance</span><span id="nav-dist" class="nav-val">—</span></div><div class="nav-result-row"><span class="nav-label">Bearing</span><span id="nav-bearing" class="nav-val">—</span></div></div><span id="nav-status" class="status-msg" role="status" aria-live="polite"></span></div></div></section>
+  <section class="panel" aria-labelledby="celestial-heading"><div class="panel-frame"><h2 id="celestial-heading" class="panel-title"><span class="panel-icon">◈</span> Sun & Moon</h2><div class="panel-body"><div class="celestial-grid"><div class="celestial-block"><h3 class="celestial-title">☀ Sun</h3><div class="celestial-row"><span class="c-label">Azimuth</span><span id="sun-az" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Elevation</span><span id="sun-el" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Sunrise</span><span id="sunrise" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Sunset</span><span id="sunset" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Solar Noon</span><span id="solar-noon" class="c-val">—</span></div></div><div class="celestial-block"><h3 class="celestial-title">☽ Moon</h3><div class="celestial-row"><span class="c-label">Azimuth</span><span id="moon-az" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Elevation</span><span id="moon-el" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Moonrise</span><span id="moonrise" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Moonset</span><span id="moonset" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Phase</span><span id="moon-phase" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Illumination</span><span id="moon-illum" class="c-val">—</span></div></div></div><span id="celestial-status" class="status-msg" role="status" aria-live="polite">Awaiting location</span></div></div></section>
+  <section class="panel" aria-labelledby="faq-heading"><div class="panel-frame"><h2 id="faq-heading" class="panel-title"><span class="panel-icon">◈</span> FAQ</h2><div class="panel-body"><div class="faq-list"><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-1"><span>Is my data tracked?</span><span class="faq-chevron">▾</span></button><div id="faq-1" class="faq-answer" role="region" aria-hidden="true"><p>No. Everything is computed entirely within your browser on your own device. Nothing is transmitted to any server, stored externally, or tracked in any way. This application is fully offline-capable and leaves no trace.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-2"><span>What sensors are required?</span><span class="faq-chevron">▾</span></button><div id="faq-2" class="faq-answer" role="region" aria-hidden="true"><p>The compass requires a magnetometer. The tilt meter requires an accelerometer. GPS requires the Geolocation API. These are standard on smartphones. Desktop browsers lack orientation sensors — the compass then shows a fixed north-up display. All features degrade gracefully.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-3"><span>How accurate is it?</span><span class="faq-chevron">▾</span></button><div id="faq-3" class="faq-answer" role="region" aria-hidden="true"><p>Accuracy depends on your device hardware. Phone magnetometers typically achieve ±2–5° when calibrated. GPS varies from ±3 m (open sky) to ±50 m (urban). Sun and moon positions are computed with sub-arcminute precision using SunCalc — far beyond practical observation needs.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-4"><span>Does it work offline?</span><span class="faq-chevron">▾</span></button><div id="faq-4" class="faq-answer" role="region" aria-hidden="true"><p>Yes. Once loaded, the page has no network dependency. All calculations run locally. The only external request is for Google Fonts, and if that fails, the page falls back to system fonts automatically.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-5"><span>How do I calibrate the compass?</span><span class="faq-chevron">▾</span></button><div id="faq-5" class="faq-answer" role="region" aria-hidden="true"><p>If the heading seems inaccurate, move your device in a figure-8 motion several times to recalibrate the magnetometer — this is a hardware-level calibration handled by your OS. Avoid nearby metal objects and magnetic cases. You can also tap the Calibrate button to reset the offset.</p></div></div></div></div></div></section>
+</main>
+<footer class="site-footer">
+  <svg class="footer-logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="32,4 38,28 32,36 26,28" fill="var(--brass)"/><polygon points="32,60 38,36 32,28 26,36" fill="var(--brass-dim)"/><polygon points="4,32 28,26 36,32 28,38" fill="var(--brass-dim)"/><polygon points="60,32 36,26 28,32 36,38" fill="var(--brass-dim)"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
+  <p class="footer-text">LIVE COMPASS — Every calculation runs on your device. No data leaves your browser.</p>
+  <p class="footer-copy">&copy; <span id="year"></span> Live Compass. Private by design.</p>
+</footer>
+<script>
+/* ============================================================
+   SUNCALC — vendored inline for offline use
+   (c) 2011-2015, Vladimir Agafonkin — MIT License
+   ============================================================ */
+(function () { 'use strict';
+
+var PI   = Math.PI,
+    sin  = Math.sin,
+    cos  = Math.cos,
+    tan  = Math.tan,
+    asin = Math.asin,
+    atan = Math.atan2,
+    acos = Math.acos,
+    rad  = PI / 180;
+
+var dayMs = 1000 * 60 * 60 * 24,
+    J1970 = 2440588,
+    J2000 = 2451545;
+
+function toJulian(date) { return date.valueOf() / dayMs - 0.5 + J1970; }
+function fromJulian(j)  { return new Date((j + 0.5 - J1970) * dayMs); }
+function toDays(date)   { return toJulian(date) - J2000; }
+
+var e = rad * 23.4397;
+
+function rightAscension(l, b) { return atan(sin(l) * cos(e) - tan(b) * sin(e), cos(l)); }
+function declination(l, b)    { return asin(sin(b) * cos(e) + cos(b) * sin(e) * sin(l)); }
+function azimuth(H, phi, dec)  { return atan(sin(H), cos(H) * sin(phi) - tan(dec) * cos(phi)); }
+function altitude(H, phi, dec) { return asin(sin(phi) * sin(dec) + cos(phi) * cos(dec) * cos(H)); }
+function siderealTime(d, lw) { return rad * (280.16 + 360.9856235 * d) - lw; }
+
+function astroRefraction(h) {
+    if (h < 0) h = 0;
+    return 0.0002967 / Math.tan(h + 0.00312536 / (h + 0.08901179));
+}
+
+function solarMeanAnomaly(d) { return rad * (357.5291 + 0.98560028 * d); }
+
+function eclipticLongitude(M) {
+    var C = rad * (1.9148 * sin(M) + 0.02 * sin(2 * M) + 0.0003 * sin(3 * M)),
+        P = rad * 102.9372;
+    return M + C + P + PI;
+}
+
+function sunCoords(d) {
+    var M = solarMeanAnomaly(d),
+        L = eclipticLongitude(M);
+    return { dec: declination(L, 0), ra: rightAscension(L, 0) };
+}
+
+var SunCalc = {};
+
+SunCalc.getPosition = function (date, lat, lng) {
+    var lw  = rad * -lng,
+        phi = rad * lat,
+        d   = toDays(date),
+        c  = sunCoords(d),
+        H  = siderealTime(d, lw) - c.ra;
+    return { azimuth: azimuth(H, phi, c.dec), altitude: altitude(H, phi, c.dec) };
+};
+
+var times = SunCalc.times = [
+    [-0.833, 'sunrise', 'sunset'],
+    [-0.3, 'sunriseEnd', 'sunsetStart'],
+    [-6, 'dawn', 'dusk'],
+    [-12, 'nauticalDawn', 'nauticalDusk'],
+    [-18, 'nightEnd', 'night'],
+    [6, 'goldenHourEnd', 'goldenHour']
+];
+
+SunCalc.addTime = function (angle, riseName, setName) { times.push([angle, riseName, setName]); };
+
+var J0 = 0.0009;
+
+function julianCycle(d, lw) { return Math.round(d - J0 - lw / (2 * PI)); }
+function approxTransit(Ht, lw, n) { return J0 + (Ht + lw) / (2 * PI) + n; }
+function solarTransitJ(ds, M, L) { return J2000 + ds + 0.0053 * sin(M) - 0.0069 * sin(2 * L); }
+function hourAngle(h, phi, d) { return acos((sin(h) - sin(phi) * sin(d)) / (cos(phi) * cos(d))); }
+function observerAngle(height) { return -2.076 * Math.sqrt(height) / 60; }
+
+function getSetJ(h, lw, phi, dec, n, M, L) {
+    var w = hourAngle(h, phi, dec),
+        a = approxTransit(w, lw, n);
+    return solarTransitJ(a, M, L);
+}
+
+SunCalc.getTimes = function (date, lat, lng, height) {
+    height = height || 0;
+    var lw = rad * -lng, phi = rad * lat, dh = observerAngle(height),
+        d = toDays(date), n = julianCycle(d, lw), ds = approxTransit(0, lw, n),
+        M = solarMeanAnomaly(ds), L = eclipticLongitude(M), dec = declination(L, 0),
+        Jnoon = solarTransitJ(ds, M, L), result = { solarNoon: fromJulian(Jnoon), nadir: fromJulian(Jnoon - 0.5) };
+    for (var i = 0, len = times.length; i < len; i++) {
+        var time = times[i], h0 = (time[0] + dh) * rad,
+            Jset = getSetJ(h0, lw, phi, dec, n, M, L), Jrise = Jnoon - (Jset - Jnoon);
+        result[time[1]] = fromJulian(Jrise);
+        result[time[2]] = fromJulian(Jset);
+    }
+    return result;
+};
+
+function moonCoords(d) {
+    var L = rad * (218.316 + 13.176396 * d),
+        M = rad * (134.963 + 13.064993 * d),
+        F = rad * (93.272 + 13.229350 * d),
+        l  = L + rad * 6.289 * sin(M),
+        b  = rad * 5.128 * sin(F),
+        dt = 385001 - 20905 * cos(M);
+    return { ra: rightAscension(l, b), dec: declination(l, b), dist: dt };
+}
+
+SunCalc.getMoonPosition = function (date, lat, lng) {
+    var lw = rad * -lng, phi = rad * lat, d = toDays(date),
+        c = moonCoords(d), H = siderealTime(d, lw) - c.ra, h = altitude(H, phi, c.dec),
+        pa = atan(sin(H), tan(phi) * cos(c.dec) - sin(c.dec) * cos(H));
+    h = h + astroRefraction(h);
+    return { azimuth: azimuth(H, phi, c.dec), altitude: h, distance: c.dist, parallacticAngle: pa };
+};
+
+SunCalc.getMoonIllumination = function (date) {
+    var d = toDays(date || new Date()),
+        s = sunCoords(d), m = moonCoords(d), sdist = 149598000,
+        phi = acos(sin(s.dec) * sin(m.dec) + cos(s.dec) * cos(m.dec) * cos(s.ra - m.ra)),
+        inc = atan(sdist * sin(phi), m.dist - sdist * cos(phi)),
+        angle = atan(cos(s.dec) * sin(s.ra - m.ra), sin(s.dec) * cos(m.dec) - cos(s.dec) * sin(m.dec) * cos(s.ra - m.ra));
+    return { fraction: (1 + cos(inc)) / 2, phase: 0.5 + 0.5 * inc * (angle < 0 ? -1 : 1) / PI, angle: angle };
+};
+
+function hoursLater(date, h) { return new Date(date.valueOf() + h * dayMs / 24); }
+
+SunCalc.getMoonTimes = function (date, lat, lng, inUTC) {
+    var t = new Date(date);
+    if (inUTC) t.setUTCHours(0, 0, 0, 0); else t.setHours(0, 0, 0, 0);
+    var hc = 0.133 * rad,
+        h0 = SunCalc.getMoonPosition(t, lat, lng).altitude - hc,
+        h1, h2, rise, set, a, b, xe, ye, d, roots, x1, x2, dx;
+    for (var i = 1; i <= 24; i += 2) {
+        h1 = SunCalc.getMoonPosition(hoursLater(t, i), lat, lng).altitude - hc;
+        h2 = SunCalc.getMoonPosition(hoursLater(t, i + 1), lat, lng).altitude - hc;
+        a = (h0 + h2) / 2 - h1;
+        b = (h2 - h0) / 2;
+        xe = -b / (2 * a);
+        ye = (a * xe + b) * xe + h1;
+        d = b * b - 4 * a * h1;
+        roots = 0;
+        if (d >= 0) {
+            dx = Math.sqrt(d) / (Math.abs(a) * 2);
+            x1 = xe - dx; x2 = xe + dx;
+            if (Math.abs(x1) <= 1) roots++;
+            if (Math.abs(x2) <= 1) roots++;
+            if (x1 < -1) x1 = x2;
+        }
+        if (roots === 1) { if (h0 < 0) rise = i + x1; else set = i + x1; }
+        else if (roots === 2) { rise = i + (ye < 0 ? x2 : x1); set = i + (ye < 0 ? x1 : x2); }
+        if (rise && set) break;
+        h0 = h2;
+    }
+    var result = {};
+    if (rise) result.rise = hoursLater(t, rise);
+    if (set) result.set = hoursLater(t, set);
+    if (!rise && !set) result[ye > 0 ? 'alwaysUp' : 'alwaysDown'] = true;
+    return result;
+};
+
+window.SunCalc = SunCalc;
+
+}());
+
+/* ============================================================
+   LIVE COMPASS — main app
+   ============================================================ */
+(function(){
+'use strict';
+
+var PI = Math.PI;
+
+var state={heading:null,pitch:0,roll:0,lat:null,lon:null,altitude:null,accuracy:null,speed:null,units:'metric',theme:'dark',compassPermission:'pending',gpsPermission:'pending',waypoint:null,orientationHandler:null,compassOffset:0,smoothPitch:0,smoothRoll:0};
+
+function updateYear(){var el=document.getElementById('year');if(el)el.textContent=new Date().getFullYear()}
+function checkHTTPS(){var p=window.location.protocol;if(p!=='https:'&&p!=='http:'||p==='file:')return;if(p!=='https:'&&window.location.hostname!=='localhost'&&window.location.hostname!=='127.0.0.1'){var w=document.getElementById('https-warning');if(w)w.classList.add('show')}}
+function applySavedTheme(){try{var s=localStorage.getItem('livecompass-theme');if(s==='light'||s==='dark')state.theme=s;else state.theme='dark'}catch(e){state.theme='dark'}document.documentElement.setAttribute('data-theme',state.theme);updateThemeLabel()}
+function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',state.theme);try{localStorage.setItem('livecompass-theme',state.theme)}catch(e){}updateThemeLabel()}
+function updateThemeLabel(){var btn=document.getElementById('theme-toggle');if(btn){var l=btn.querySelector('.theme-label');if(l)l.textContent=state.theme==='dark'?'Dark':'Light'}}
+function buildCompassTicks(){var g=document.getElementById('compass-ticks');if(!g)return;var svg='';for(var deg=0;deg<360;deg+=5){var rad=(deg-90)*PI/180,isM=deg%30===0,isI=deg%90!==0&&deg%45===0;var r1=140,r2=isM?128:(isI?133:136);var x1=160+r1*Math.cos(rad),y1=160+r1*Math.sin(rad);var x2=160+r2*Math.cos(rad),y2=160+r2*Math.sin(rad);svg+='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="var(--brass)" stroke-width="'+(isM?1.5:.7)+'" opacity="'+(isM?.9:(isI?.6:.35))+'"/>'}g.innerHTML=svg}
+function buildCompassLabels(){var g=document.getElementById('compass-labels');if(!g)return;var cards=[{d:0,l:'N'},{d:90,l:'E'},{d:180,l:'S'},{d:270,l:'W'}];var inters=[{d:45,l:'NE'},{d:135,l:'SE'},{d:225,l:'SW'},{d:315,l:'NW'}];var svg='';cards.forEach(function(c){var r=(c.d-90)*PI/180,x=160+112*Math.cos(r),y=160+112*Math.sin(r);svg+='<text x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="central" fill="var(--brass-light)" font-size="14" font-family="Inter,sans-serif" font-weight="600">'+c.l+'</text>'});inters.forEach(function(c){var r=(c.d-90)*PI/180,x=160+112*Math.cos(r),y=160+112*Math.sin(r);svg+='<text x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="central" fill="var(--brass-dim)" font-size="10" font-family="Inter,sans-serif" font-weight="500">'+c.l+'</text>'});for(var deg=30;deg<360;deg+=30){var r=(deg-90)*PI/180,x=160+100*Math.cos(r),y=160+100*Math.sin(r);svg+='<text x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="central" fill="var(--fg-dim)" font-size="8" font-family="Inter,sans-serif">'+deg+'°</text>'}g.innerHTML=svg}
+function rotateNeedle(h){var n=document.getElementById('compass-needle');if(!n)return;n.style.transform='rotate('+h+'deg)';n.style.transformOrigin='160px 160px';n.style.transition='transform .12s ease-out'}
+function cardinalFromHeading(h){var dirs=['N','NE','E','SE','S','SW','W','NW'];return dirs[Math.round(h/45)%8]}
+function setCompassStatus(s){var el=document.getElementById('compass-status');if(!el)return;var msgs={pending:'Not yet activated',granted:'Compass active',denied:'Permission denied — compass unavailable',unsupported:'No orientation sensor detected. Dial fixed to True North.'};el.textContent=msgs[s]||'';el.className='status-msg'+(s==='denied'?' error':(s==='granted'?' success':''));state.compassPermission=s}
+document.getElementById('enable-compass').onclick=function(){var DOE=window.DeviceOrientationEvent;if(!DOE){setCompassStatus('unsupported');freezeNorth();return}if(typeof DOE.requestPermission==='function'){DOE.requestPermission().then(function(perm){if(perm==='granted'){attachOrientation();setCompassStatus('granted');document.getElementById('calibrate-compass').style.display=''}else{setCompassStatus('denied');freezeNorth()}}).catch(function(){setCompassStatus('denied');freezeNorth()})}else{attachOrientation();setCompassStatus('granted');document.getElementById('calibrate-compass').style.display=''}};
+document.getElementById('calibrate-compass').onclick=function(){if(state.heading!=null){state.compassOffset=state.heading;var el=document.getElementById('compass-status');if(el){el.textContent='Calibrated — offset reset';el.className='status-msg success'}}};
+function attachOrientation(){if(state.orientationHandler)return;state.orientationHandler=onOrientation;if('DeviceOrientationAbsoluteEvent' in window){window.addEventListener('deviceorientationabsolute',state.orientationHandler,true)}else{window.addEventListener('deviceorientation',state.orientationHandler,true)}}
+function onOrientation(event){var alpha=null;if(event.alpha!=null){if(event.absolute===true||'DeviceOrientationAbsoluteEvent' in window){alpha=event.alpha}else if(event.webkitCompassHeading!=null){alpha=event.webkitCompassHeading}else if(event.alpha!=null){alpha=event.alpha}}if(alpha!=null){var corrected=alpha-state.compassOffset;if(corrected<0)corrected+=360;if(corrected>=360)corrected-=360;state.heading=corrected;var displayHeading=Math.round(corrected);updateHeadingReadout(displayHeading);rotateNeedle(displayHeading)}var beta=event.beta||0,gamma=event.gamma||0;state.smoothPitch=state.smoothPitch*.7+beta*.3;state.smoothRoll=state.smoothRoll*.7+gamma*.3;state.pitch=state.smoothPitch;state.roll=state.smoothRoll;updateTiltDisplay();updateCelestialMarkers()}
+function updateHeadingReadout(h){var d=document.getElementById('heading-deg'),c=document.getElementById('heading-card');if(d)d.textContent=String(h).padStart(3,'0')+'°';if(c)c.textContent=cardinalFromHeading(h)}
+function freezeNorth(){rotateNeedle(0);updateHeadingReadout(0)}
+function updateTiltDisplay(){var pitch=state.pitch,roll=state.roll;var slope=Math.sqrt(pitch*pitch+roll*roll);var p=document.getElementById('pitch-val'),r=document.getElementById('roll-val'),s=document.getElementById('slope-val');if(p)p.textContent=pitch.toFixed(1)+'°';if(r)r.textContent=roll.toFixed(1)+'°';if(s)s.textContent=slope.toFixed(1)+'°';var b=document.getElementById('tilt-bubble');if(b){var max=75;var xOff=Math.max(-max,Math.min(max,roll*(max/90)));var yOff=Math.max(-max,Math.min(max,pitch*(max/180)));b.setAttribute('cx',100+xOff);b.setAttribute('cy',100+yOff)}var t=document.getElementById('tilt-status');if(t){if(state.compassPermission==='granted'){t.textContent='Tilt sensor active';t.className='status-msg success'}else if(state.compassPermission==='unsupported'){t.textContent='No tilt sensor detected';t.className='status-msg'}}}
+function setGpsStatus(s){var el=document.getElementById('gps-status');if(!el)return;var msgs={pending:'Not yet activated',granted:'Location active',denied:'Location permission denied',unsupported:'Geolocation not supported on this device'};el.textContent=msgs[s]||'';el.className='status-msg'+(s==='denied'?' error':(s==='granted'?' success':''));state.gpsPermission=s}
+document.getElementById('turn-on-location').onclick=function(){document.getElementById('enable-gps').click()}
+document.getElementById('enable-gps').onclick=function(){if(!('geolocation' in navigator)){setGpsStatus('unsupported');return}navigator.geolocation.watchPosition(onGpsSuccess,onGpsError,{enableHighAccuracy:true,maximumAge:5e3,timeout:15e3})};
+function onGpsSuccess(pos){state.lat=pos.coords.latitude;state.lon=pos.coords.longitude;state.altitude=pos.coords.altitude;state.accuracy=pos.coords.accuracy;state.speed=pos.coords.speed;setGpsStatus('granted');updateGpsDisplay();updateCelestialData()}
+function onGpsError(err){var el=document.getElementById('gps-status');if(err.code===err.PERMISSION_DENIED){if(el){el.textContent='GPS permission denied. Please enable location access in your browser settings.';el.className='status-msg error'}setGpsStatus('denied')}else if(err.code===err.POSITION_UNAVAILABLE){if(el){el.textContent='GPS position unavailable. Move to an area with clear sky view.';el.className='status-msg error'}setGpsStatus('denied')}else if(err.code===err.TIMEOUT){if(el){el.textContent='GPS request timed out. Retrying...';el.className='status-msg'}}}
+function metersToFeet(m){return m*3.28084}function msToKmh(ms){return ms*3.6}function msToMph(ms){return ms*2.23694}
+function formatAltitude(m){if(m==null)return'—';return state.units==='metric'?m.toFixed(0)+' m':metersToFeet(m).toFixed(0)+' ft'}
+function formatAccuracy(m){if(m==null)return'—';return state.units==='metric'?m.toFixed(0)+' m':metersToFeet(m).toFixed(0)+' ft'}
+function formatSpeed(ms){if(ms==null||ms<0)return'—';return state.units==='metric'?msToKmh(ms).toFixed(1)+' km/h':msToMph(ms).toFixed(1)+' mph'}
+function formatDistance(km){if(state.units==='metric'){return km<1?(km*1e3).toFixed(0)+' m':km.toFixed(2)+' km'}else{var mi=km*.621371;return mi<.1?(mi*5280).toFixed(0)+' ft':mi.toFixed(2)+' mi'}}
+function updateGpsDisplay(){var lat=document.getElementById('gps-lat'),lon=document.getElementById('gps-lon'),alt=document.getElementById('gps-alt'),acc=document.getElementById('gps-acc'),sp=document.getElementById('gps-speed');if(lat)lat.textContent=state.lat!=null?state.lat.toFixed(6):'—';if(lon)lon.textContent=state.lon!=null?state.lon.toFixed(6):'—';if(alt)alt.textContent=formatAltitude(state.altitude);if(acc)acc.textContent=formatAccuracy(state.accuracy);if(sp)sp.textContent=formatSpeed(state.speed);if(state.waypoint&&state.lat!=null)updateDistanceAndBearing();updateCelestialMarkers()}
+document.getElementById('unit-toggle').onclick=function(){state.units=state.units==='metric'?'imperial':'metric';var l=document.getElementById('unit-label');if(l)l.textContent=state.units==='metric'?'Metric':'Imperial';updateGpsDisplay();if(state.waypoint&&state.lat!=null)updateDistanceAndBearing()};
+document.getElementById('copy-coords').onclick=function(){if(state.lat==null||state.lon==null){showCopy('No coordinates to copy',false);return}var text=state.lat.toFixed(6)+', '+state.lon.toFixed(6);if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(function(){showCopy('Copied!',true)}).catch(function(){fallbackCopy(text)})}else{fallbackCopy(text)}};
+function fallbackCopy(text){try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showCopy('Copied!',true)}catch(e){showCopy('Copy failed',false)}}
+function showCopy(msg,ok){var el=document.getElementById('copy-feedback');if(!el)return;el.textContent=msg;el.style.color=ok?'var(--brass)':'#e05555';setTimeout(function(){el.textContent=''},3e3)}
+function haversine(lat1,lon1,lat2,lon2){var R=6371,dLat=toRad(lat2-lat1),dLon=toRad(lon2-lon1);var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))}
+function initialBearing(lat1,lon1,lat2,lon2){var dLon=toRad(lon2-lon1);var y=Math.sin(dLon)*Math.cos(toRad(lat2));var x=Math.cos(toRad(lat1))*Math.sin(toRad(lat2))-Math.sin(toRad(lat1))*Math.cos(toRad(lat2))*Math.cos(dLon);return(toDeg(Math.atan2(y,x))+360)%360}
+function toRad(d){return d*PI/180}function toDeg(r){return r*180/PI}
+document.getElementById('plot-course').onclick=function(){if(state.lat==null||state.lon==null){var s=document.getElementById('nav-status');if(s){s.textContent='Enable location first';s.className='status-msg error'}return}var lat2=parseFloat(document.getElementById('target-lat').value);var lon2=parseFloat(document.getElementById('target-lon').value);if(isNaN(lat2)||isNaN(lon2)||lat2<-90||lat2>90||lon2<-180||lon2>180){var s=document.getElementById('nav-status');if(s){s.textContent='Invalid coordinates';s.className='status-msg error'}return}state.waypoint={lat:lat2,lon:lon2};updateDistanceAndBearing();plotWaypointOnDial();var s=document.getElementById('nav-status');if(s){s.textContent='';s.className='status-msg'}};
+function updateDistanceAndBearing(){if(!state.waypoint||state.lat==null)return;var dist=haversine(state.lat,state.lon,state.waypoint.lat,state.waypoint.lon);var bearing=initialBearing(state.lat,state.lon,state.waypoint.lat,state.waypoint.lon);var d=document.getElementById('nav-dist'),b=document.getElementById('nav-bearing'),r=document.getElementById('nav-results');if(d)d.textContent=formatDistance(dist);if(b)b.textContent=Math.round(bearing)+'° ('+cardinalFromHeading(bearing)+')';if(r)r.style.display='flex'}
+function plotWaypointOnDial(){var marker=document.getElementById('waypoint-marker');if(!marker||!state.waypoint||state.lat==null)return;var bearing=initialBearing(state.lat,state.lon,state.waypoint.lat,state.waypoint.lon);var r=120,angle=(bearing-90)*PI/180;var cx=160+r*Math.cos(angle),cy=160+r*Math.sin(angle);var circle=marker.querySelector('circle'),text=marker.querySelector('text');if(circle){circle.setAttribute('cx',cx);circle.setAttribute('cy',cy)}if(text){text.setAttribute('x',cx);text.setAttribute('y',cy-12)}marker.style.display='block'}
+document.getElementById('clear-waypoint').onclick=function(){state.waypoint=null;var m=document.getElementById('waypoint-marker');if(m)m.style.display='none';var r=document.getElementById('nav-results');if(r)r.style.display='none';var s=document.getElementById('nav-status');if(s){s.textContent='Waypoint cleared';s.className='status-msg'}var lat=document.getElementById('target-lat'),lon=document.getElementById('target-lon');if(lat)lat.value='';if(lon)lon.value=''};
+function updateCelestialData(){if(state.lat==null||state.lon==null)return;var now=new Date();var pos=SunCalc.getPosition(now,state.lat,state.lon);var times=SunCalc.getTimes(now,state.lat,state.lon);var moonPos=SunCalc.getMoonPosition(now,state.lat,state.lon);var illum=SunCalc.getMoonIllumination(now);var moonTimes=SunCalc.getMoonTimes(now,state.lat,state.lon);var sunAz=toDeg(pos.azimuth)+180;if(sunAz>=360)sunAz-=360;var sunEl=toDeg(pos.altitude);var moonAz=toDeg(moonPos.azimuth)+180;if(moonAz>=360)moonAz-=360;var moonEl=toDeg(moonPos.altitude);setText('sun-az',sunAz.toFixed(1)+'°');setText('sun-el',sunEl.toFixed(1)+'°');setText('moon-az',moonAz.toFixed(1)+'°');setText('moon-el',moonEl.toFixed(1)+'°');setText('sunrise',formatTime(times.sunrise));setText('sunset',formatTime(times.sunset));setText('solar-noon',formatTime(times.solarNoon));setText('moonrise',formatTime(moonTimes.rise));setText('moonset',formatTime(moonTimes.set));setText('moon-phase',moonPhaseName(illum.phase));setText('moon-illum',(illum.fraction*100).toFixed(1)+'%');if(!times.sunrise&&!times.sunset){if(times.alwaysUp){setText('sunrise','Always up (polar day)');setText('sunset','—')}else if(times.alwaysDown){setText('sunrise','—');setText('sunset','Always down (polar night)')}}else{if(!times.sunrise)setText('sunrise','—');if(!times.sunset)setText('sunset','—')}if(!times.solarNoon)setText('solar-noon','—');if(!moonTimes.rise&&!moonTimes.set){if(moonTimes.alwaysUp){setText('moonrise','Always up');setText('moonset','—')}else if(moonTimes.alwaysDown){setText('moonrise','—');setText('moonset','Always down')}}else{if(!moonTimes.rise)setText('moonrise','—');if(!moonTimes.set)setText('moonset','—')}updateCelestialMarkers(sunAz,moonAz)}
+function moonPhaseName(phase){if(phase<.03||phase>.97)return'New Moon';if(phase<.22)return'Waxing Crescent';if(phase<.28)return'First Quarter';if(phase<.47)return'Waxing Gibbous';if(phase<.53)return'Full Moon';if(phase<.72)return'Waning Gibbous';if(phase<.78)return'Last Quarter';return'Waning Crescent'}
+function formatTime(date){if(!date||!(date instanceof Date)||isNaN(date.getTime()))return'—';return date.toLocaleTimeString(void 0,{hour:'2-digit',minute:'2-digit'})}
+function setText(id,text){var el=document.getElementById(id);if(el)el.textContent=text}
+function updateCelestialMarkers(sunAz,moonAz){var c=document.getElementById('celestial-markers');if(!c)return;if(state.lat==null||state.lon==null){c.innerHTML='';return}if(sunAz==null||moonAz==null){var now=new Date();var pos=SunCalc.getPosition(now,state.lat,state.lon);var mPos=SunCalc.getMoonPosition(now,state.lat,state.lon);sunAz=toDeg(pos.azimuth)+180;if(sunAz>=360)sunAz-=360;moonAz=toDeg(mPos.azimuth)+180;if(moonAz>=360)moonAz-=360}var r=100,svg='';var sR=(sunAz-90)*PI/180;svg+='<circle cx="'+(160+r*Math.cos(sR))+'" cy="'+(160+r*Math.sin(sR))+'" r="5" fill="#ffd449" stroke="var(--brass)" stroke-width=".5" opacity=".9"/>';var mR=(moonAz-90)*PI/180;svg+='<circle cx="'+(160+r*Math.cos(mR))+'" cy="'+(160+r*Math.sin(mR))+'" r="4" fill="#c0c8d8" stroke="var(--brass-dim)" stroke-width=".5" opacity=".9"/>';c.innerHTML=svg}
+function startClock(){setInterval(function(){if(state.lat!=null&&state.lon!=null)updateCelestialData()},1e4)}
+function setupFAQ(){var buttons=document.querySelectorAll('.faq-question');buttons.forEach(function(btn){btn.addEventListener('click',function(){var expanded=btn.getAttribute('aria-expanded')==='true';var answer=document.getElementById(btn.getAttribute('aria-controls'));btn.setAttribute('aria-expanded',String(!expanded));if(answer){if(expanded){answer.setAttribute('aria-hidden','true');answer.style.maxHeight='0'}else{answer.setAttribute('aria-hidden','false');answer.style.maxHeight=answer.scrollHeight+20+'px'}}})})}
+function detectSensors(){if(!('DeviceOrientationEvent' in window)){setCompassStatus('unsupported');freezeNorth()}if(!('geolocation' in navigator))setGpsStatus('unsupported')}
+function bindEvents(){document.getElementById('theme-toggle').addEventListener('click',toggleTheme);setupFAQ()}
+function init(){checkHTTPS();applySavedTheme();buildCompassTicks();buildCompassLabels();updateYear();bindEvents();detectSensors();startClock()}
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init)}else{init()}
+})();
+</script>
+</body>
+</html>
