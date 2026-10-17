@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="description" content="About Live Compass — a free, privacy-first celestial navigation tool built with SunCalc, device sensors, and the Haversine formula.">
+<title>About — Live Compass</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='none' stroke='%23c9a227' stroke-width='2'/%3E%3Cpolygon points='32,4 38,28 32,36 26,28' fill='%23c9a227'/%3E%3Cpolygon points='32,60 38,36 32,28 26,36' fill='%235a4a1f'/%3E%3Cpolygon points='4,32 28,26 36,32 28,38' fill='%235a4a1f'/%3E%3Cpolygon points='60,32 36,26 28,32 36,38' fill='%235a4a1f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="32,4 38,28 32,36 26,28" fill="var(--brass)"/><polygon points="32,60 38,36 32,28 26,36" fill="var(--brass-dim)"/><polygon points="4,32 28,26 36,32 28,38" fill="var(--brass-dim)"/><polygon points="60,32 36,26 28,32 36,38" fill="var(--brass-dim)"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
+      <span class="logo-name">LIVE COMPASS</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Tools</a>
+      <a href="guides/index.html">Guides</a>
+      <a href="about.html" class="active">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button id="theme-toggle" class="btn btn-ghost btn-sm" aria-label="Toggle theme"><span class="theme-label">Dark</span></button>
+  </div>
+</header>
+<main class="main-content">
+  <div class="static-page">
+    <h1>About Live Compass</h1>
+
+    <h2>The Project</h2>
+    <p>Live Compass began with a simple frustration: most compass apps are bloated, ad-heavy, and phone home with your location data. We wanted a compass that respected your privacy as much as your need for accurate heading information. The result is a fully client-side navigation instrument that runs entirely in your browser — no accounts, no tracking, no servers, no data collection.</p>
+    <p>The project draws on a rich tradition of navigation instrumentation. From the magnetic compasses that guided explorers across uncharted oceans to the sextants that enabled celestial navigation, humans have always built tools to answer a fundamental question: which way am I going? Live Compass continues that tradition using the sensors already in your pocket.</p>
+
+    <h2>Celestial Navigation Mathematics</h2>
+    <p>At the heart of Live Compass is the <a href="https://github.com/mourner/suncalc" rel="noopener">SunCalc</a> library, created by Vladimir Agafonkin and released under the MIT License. SunCalc provides highly accurate calculations of sun and moon positions, phases, and times for any location on Earth and any date. The library implements astronomical algorithms based on the formulas published at <a href="http://aa.quae.nl/en/reken/zonpositie.html" rel="noopener">aa.quae.nl</a>, which themselves derive from Jean Meeus's authoritative <em>Astronomical Algorithms</em> (Willmann-Bell, 1998).</p>
+    <p>The core calculations work as follows. First, the Julian Day number is computed from the current date. From this, the solar mean anomaly and ecliptic longitude are derived using standard perturbation series. The sun's right ascension and declination are then calculated from its ecliptic coordinates, accounting for the obliquity of the ecliptic (approximately 23.4397 degrees). The hour angle — the angular distance between the observer's meridian and the sun's position — is computed from the local sidereal time. Finally, the sun's azimuth and altitude are obtained by transforming from equatorial to horizontal coordinates using spherical trigonometry.</p>
+    <p>For the moon, SunCalc uses a similar approach with additional perturbation terms to account for the moon's more complex orbital mechanics. The library calculates the moon's ecliptic longitude, latitude, and distance, then transforms these to equatorial and horizontal coordinates. Moon rise and set times are found by scanning the moon's altitude at two-hour intervals and fitting a quadratic curve to detect zero crossings.</p>
+    <p>The distance and bearing between two points on Earth are computed using the Haversine formula and the initial bearing formula. The Haversine formula calculates the great-circle distance between two points on a sphere given their latitudes and longitudes, using the formula: <em>a = sin²(Δφ/2) + cos(φ₁) · cos(φ₂) · sin²(Δλ/2)</em>, where φ is latitude, λ is longitude, and the distance is <em>d = 2R · atan2(√a, √(1−a))</em>. The initial bearing is calculated using: <em>θ = atan2(sin(Δλ) · cos(φ₂), cos(φ₁) · sin(φ₂) − sin(φ₁) · cos(φ₂) · cos(Δλ))</em>.</p>
+
+    <h2>Hardware Sensor API Integration</h2>
+    <p>Live Compass leverages three key web APIs to access device hardware sensors. The <strong>Device Orientation API</strong> provides compass heading (alpha), pitch (beta), and roll (gamma) data from the device's magnetometer and accelerometer. On iOS 13 and later, the API requires explicit user permission via <code>DeviceOrientationEvent.requestPermission()</code>, which Live Compass handles gracefully with a clear enable button. The <strong>DeviceOrientationAbsoluteEvent</strong> interface is used when available to obtain absolute orientation relative to the Earth's coordinate frame rather than the device's initial orientation.</p>
+    <p>The <strong>Geolocation API</strong> provides the user's position, altitude, accuracy, and speed. Live Compass uses <code>navigator.geolocation.watchPosition()</code> with high accuracy enabled to continuously update the user's location. This position data feeds directly into the SunCalc calculations to provide location-specific celestial information.</p>
+    <p>The <strong>Visual Viewport API</strong> is used to detect and correct unwanted zoom behavior on mobile devices, particularly iOS Safari. The application monitors viewport scale changes and resets the zoom level to 1 when the browser attempts to zoom in response to input focus or touch gestures, ensuring the compass dial remains stable and readable.</p>
+
+    <h2>Privacy by Design</h2>
+    <p>Every calculation in Live Compass runs locally on your device. When you open the page, your browser downloads the HTML, CSS, and JavaScript files. After that, the application has no network dependency. Your GPS coordinates, compass heading, and tilt data are processed in memory and never transmitted anywhere. The only data persisted is your theme preference (dark or light), stored in <code>localStorage</code> under the key <code>livecompass-theme</code>. This data never leaves your device.</p>
+    <p>The only external requests made by the Site are for Google Fonts (Cormorant Garamond and Inter typefaces) and Google AdSense (if ads are displayed). These requests are subject to Google's privacy policy. No analytics, tracking, or fingerprinting scripts are present on the Site.</p>
+
+    <h2>Technology Stack</h2>
+    <p>Live Compass is built with vanilla HTML, CSS, and JavaScript — no frameworks, no build tools, no dependencies beyond the vendored SunCalc library. The user interface uses CSS custom properties for theming, with a dark brass-and-cyberpunk aesthetic inspired by vintage nautical instruments. The typography pairs Cormorant Garamond (a serif typeface with historical roots in sixteenth-century French printing) with Inter (a modern sans-serif designed for screen readability). The compass dial, tilt gauge, and celestial markers are rendered as inline SVG, scaled responsively using <code>aspect-ratio</code> and <code>viewBox</code> attributes.</p>
+    <p>The application is fully offline-capable. Once loaded, it can be added to your home screen as a progressive web app and used without an internet connection. All features degrade gracefully on devices without sensors — the compass falls back to a fixed north-up display, and celestial calculations can be performed with manually entered coordinates.</p>
+
+    <h2>Open Source</h2>
+    <p>Live Compass is open source. The source code is available on GitHub. We welcome contributions, bug reports, and feature requests. The SunCalc library is used under the MIT License, and the original copyright notice is preserved in the source code.</p>
+
+    <h2>Contact</h2>
+    <p>Questions, feedback, or bug reports? Visit our <a href="contact.html">contact page</a> or email us at <a href="mailto:wxfury@gmail.com">wxfury@gmail.com</a>.</p>
+  </div>
+</main>
+<footer class="site-footer">
+  <svg class="footer-logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="32,4 38,28 32,36 26,28" fill="var(--brass)"/><polygon points="32,60 38,36 32,28 26,36" fill="var(--brass-dim)"/><polygon points="4,32 28,26 36,32 28,38" fill="var(--brass-dim)"/><polygon points="60,32 36,26 28,32 36,38" fill="var(--brass-dim)"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
+  <p class="footer-text">LIVE COMPASS — Every calculation runs on your device. No data leaves your browser.</p>
+  <nav class="footer-nav" aria-label="Footer">
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="sitemap.xml">Sitemap</a>
+  </nav>
+  <p class="footer-copy">&copy; <span id="year"></span> Live Compass. Private by design.</p>
+</footer>
+<script src="theme.js"></script>
+</body>
+</html>
