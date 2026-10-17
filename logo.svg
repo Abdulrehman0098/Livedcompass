@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+  <defs>
+    <linearGradient id="brand-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5d76e;stop-opacity:1"/>
+      <stop offset="50%" style="stop-color:#c9a227;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#8a6d1f;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="brand-gold-light" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffe9a0;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#c9a227;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="brand-text" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e8e0cf;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#c9a227;stop-opacity:1"/>
+    </linearGradient>
+    <filter id="brand-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Emblem -->
+  <g transform="translate(8, 8)">
+    <circle cx="32" cy="32" r="29" stroke="url(#brand-gold)" stroke-width="1.2" fill="none" opacity="0.5"/>
+    <circle cx="32" cy="32" r="26" stroke="url(#brand-gold)" stroke-width="0.6" fill="none" opacity="0.3"/>
+    <polygon points="32,4 35,28 32,32 29,28" fill="url(#brand-gold-light)"/>
+    <polygon points="32,60 35,36 32,32 29,36" fill="url(#brand-gold)" opacity="0.7"/>
+    <polygon points="4,32 28,29 32,32 28,35" fill="url(#brand-gold)" opacity="0.7"/>
+    <polygon points="60,32 36,29 32,32 36,35" fill="url(#brand-gold)" opacity="0.7"/>
+    <polygon points="12,12 26,26 24,24" fill="url(#brand-gold)" opacity="0.4"/>
+    <polygon points="52,12 38,26 40,24" fill="url(#brand-gold)" opacity="0.4"/>
+    <polygon points="12,52 26,38 24,40" fill="url(#brand-gold)" opacity="0.4"/>
+    <polygon points="52,52 38,38 40,40" fill="url(#brand-gold)" opacity="0.4"/>
+    <circle cx="32" cy="32" r="16" stroke="url(#brand-gold)" stroke-width="0.8" fill="none" opacity="0.5"/>
+    <circle cx="32" cy="32" r="6" fill="url(#brand-gold)" opacity="0.3"/>
+    <circle cx="32" cy="32" r="3.5" fill="url(#brand-gold-light)" filter="url(#brand-glow)"/>
+    <circle cx="32" cy="32" r="1.5" fill="#0a0e1a"/>
+    <line x1="32" y1="8" x2="32" y2="12" stroke="#c9a227" stroke-width="1.5"/>
+    <line x1="32" y1="52" x2="32" y2="56" stroke="#c9a227" stroke-width="1.5"/>
+    <line x1="8" y1="32" x2="12" y2="32" stroke="#c9a227" stroke-width="1.5"/>
+    <line x1="52" y1="32" x2="56" y2="32" stroke="#c9a227" stroke-width="1.5"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="80" y="36" font-family="Cormorant Garamond, Georgia, serif" font-size="24" font-weight="700" letter-spacing="4" fill="url(#brand-text)">LIVE COMPASS</text>
+  <text x="80" y="56" font-family="Inter, -apple-system, sans-serif" font-size="10" font-weight="400" letter-spacing="6" fill="#c9a227" opacity="0.7">CELESTIAL NAVIGATION</text>
+  <line x1="80" y1="64" x2="240" y2="64" stroke="url(#brand-gold)" stroke-width="0.75" opacity="0.3"/>
+</svg>
