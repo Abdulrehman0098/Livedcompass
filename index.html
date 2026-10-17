@@ -14,9 +14,10 @@
 <style>
 :root{--bg:#0a0e1a;--bg-2:#0d1424;--panel-bg:#111927;--panel-border:#1e2a3d;--fg:#e8e0cf;--fg-dim:#a09880;--brass:#c9a227;--brass-light:#e0b84c;--brass-dim:#8a6d1f;--accent-cyan:#4ac4e0;--dial-bg:#0c1220;--shadow:0 4px 24px rgba(0,0,0,.5);--glow:0 0 8px rgba(201,162,39,.3);--corner:14px;--touch-min:48px;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Inter',-apple-system,sans-serif}
 [data-theme="light"]{--bg:#f4ecd8;--bg-2:#ebe2cc;--panel-bg:#f7f0dd;--panel-border:#d4c9a8;--fg:#1a1a1a;--fg-dim:#5a5040;--brass:#8a6d1f;--brass-light:#a6842a;--brass-dim:#6b5417;--accent-cyan:#1a7a9a;--dial-bg:#e8dfc5;--shadow:0 4px 16px rgba(0,0,0,.12);--glow:0 0 6px rgba(138,109,31,.25)}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent;touch-action:pan-y}
-body{font-family:var(--sans);background:var(--bg);color:var(--fg);line-height:1.6;min-height:100dvh;transition:background .4s,color .4s;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-user-select:none;user-select:none}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-touch-callout:none;touch-action:pan-y}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-tap-highlight-color:transparent;touch-action:pan-y;overflow-x:hidden}
+body{font-family:var(--sans);background:var(--bg);color:var(--fg);line-height:1.6;min-height:100dvh;transition:background .4s,color .4s;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-user-select:none;user-select:none;touch-action:pan-y;position:relative;-webkit-touch-callout:none}
+input,textarea,.value{-webkit-user-select:text;user-select:text}
 h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.02em}
 #https-warning{display:none;position:sticky;top:0;z-index:9999;background:#8b0000;color:#fff;text-align:center;padding:.75rem 1rem;font-size:.85rem;font-weight:600}
 #https-warning.show{display:block}
@@ -25,7 +26,6 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.02em}
 .logo{display:flex;align-items:center;gap:.6rem}
 .logo-mark{width:38px;height:38px;color:var(--brass);flex-shrink:0}
 .logo-name{font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--brass);letter-spacing:.08em;line-height:1.1}
-.location-prompt{font-size:.7rem;color:var(--brass-light);text-transform:uppercase;letter-spacing:.15em;margin-left:auto;margin-right:1rem;animation:pulse 2s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 .btn{font-family:var(--sans);font-size:.85rem;font-weight:500;min-height:var(--touch-min);padding:.5rem 1.2rem;border:1px solid var(--brass-dim);background:var(--panel-bg);color:var(--fg);cursor:pointer;border-radius:3px;transition:all .2s;letter-spacing:.03em;text-transform:uppercase;-webkit-user-select:none;user-select:none}
 .btn:hover{border-color:var(--brass);box-shadow:var(--glow)}
 .btn:active{transform:scale(.96);opacity:.9}
@@ -100,33 +100,61 @@ h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:.02em}
 @media(min-width:768px){.main-content{padding:2rem;gap:2rem}.panel-frame{padding:1.5rem}.compass-dial{max-width:360px}.heading-deg{font-size:3rem}.celestial-grid{grid-template-columns:1fr 1fr}.logo-name{font-size:1.3rem}}
 @media(max-width:380px){.compass-dial{max-width:260px}.heading-deg{font-size:2rem}.celestial-grid{grid-template-columns:1fr}.gps-grid{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* ---------- Site Navigation ---------- */
+.site-nav{display:flex;gap:1.5rem;align-items:center}
+.site-nav a{color:var(--fg-dim);text-decoration:none;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;font-weight:500;padding:.4rem .2rem;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap}
+.site-nav a:hover{color:var(--brass)}
+.site-nav a.active{color:var(--brass);border-bottom-color:var(--brass)}
+a.logo{text-decoration:none}
+/* ---------- Footer Navigation ---------- */
+.footer-nav{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.75rem}
+.footer-nav a{color:var(--fg-dim);text-decoration:none;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;transition:color .2s}
+.footer-nav a:hover{color:var(--brass)}
+/* ---------- AdSense Slot ---------- */
+.adsense-slot{min-height:100px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--panel-border);border-radius:4px;margin:1.5rem 0;color:var(--fg-dim);font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;background:var(--panel-bg)}
+.adsense-slot::before{content:'Advertisement'}
+@media(max-width:768px){.site-nav{gap:.9rem}.site-nav a{font-size:.72rem}.header-inner{flex-wrap:wrap;gap:.5rem}.footer-nav{gap:.9rem}}
+@media(max-width:520px){.site-nav{order:3;width:100%;justify-content:center;padding-top:.25rem}}
 </style>
 </head>
 <body>
 <div id="https-warning">⚠️ Sensors and GPS are blocked on insecure connections. Please host this file on HTTPS (e.g., Netlify, Vercel, or GitHub Pages) and open that link on your phone.</div>
 <header class="site-header">
   <div class="header-inner">
-    <div class="logo">
+    <a class="logo" href="index.html">
       <svg class="logo-mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="32,4 38,28 32,36 26,28" fill="var(--brass)"/><polygon points="32,60 38,36 32,28 26,36" fill="var(--brass-dim)"/><polygon points="4,32 28,26 36,32 28,38" fill="var(--brass-dim)"/><polygon points="60,32 36,26 28,32 36,38" fill="var(--brass-dim)"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
       <span class="logo-name">LIVE COMPASS</span>
-      <span class="location-prompt">TURN ON LOCATION</span>
-    </div>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html" class="active">Tools</a>
+      <a href="guides/index.html">Guides</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
     <button id="theme-toggle" class="btn btn-ghost btn-sm" aria-label="Toggle theme"><span class="theme-label">Dark</span></button>
   </div>
 </header>
 <main class="main-content">
-  <section class="panel" aria-labelledby="compass-heading"><div class="panel-frame"><h2 id="compass-heading" class="panel-title"><span class="panel-icon">◈</span> Compass</h2><div class="panel-body"><div class="compass-wrap"><svg id="compass-dial" class="compass-dial" viewBox="0 0 320 320" role="img" aria-label="Compass dial"><circle cx="160" cy="160" r="155" fill="none" stroke="var(--brass)" stroke-width="1.5"/><circle cx="160" cy="160" r="148" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".6"/><circle cx="160" cy="160" r="140" fill="var(--dial-bg)"/><g id="compass-ticks"></g><g id="compass-labels"></g><g id="celestial-markers"></g><g id="waypoint-marker" style="display:none"><circle r="6" fill="var(--accent-cyan)" stroke="var(--brass)" stroke-width="1"/><text y="-12" text-anchor="middle" fill="var(--accent-cyan)" font-size="9" font-family="Inter,sans-serif">WP</text></g><g id="compass-needle"><polygon points="160,40 152,160 168,160" fill="var(--brass)" opacity=".9"/><polygon points="160,280 152,160 168,160" fill="var(--brass-dim)" opacity=".6"/><circle cx="160" cy="160" r="8" fill="var(--brass)" stroke="var(--bg)" stroke-width="1"/><circle cx="160" cy="160" r="3" fill="var(--bg)"/></g></svg><div class="heading-readout"><span id="heading-deg" class="heading-deg">---°</span><span id="heading-card" class="heading-card">—</span></div></div><button id="turn-on-location" class="btn btn-primary" style="width:100%;max-width:280px;margin:.75rem 0;padding:.75rem;font-size:.9rem">📍 TURN ON LOCATION</button>
-        <div class="compass-controls"><button id="enable-compass" class="btn btn-primary">Enable Compass</button><button id="calibrate-compass" class="btn btn-secondary" style="display:none">Calibrate</button></div><span id="compass-status" class="status-msg" role="status" aria-live="polite">Not yet activated</span></div></div></section>
+  <section class="panel" aria-labelledby="compass-heading"><div class="panel-frame"><h2 id="compass-heading" class="panel-title"><span class="panel-icon">◈</span> Compass</h2><div class="panel-body"><div class="compass-wrap"><svg id="compass-dial" class="compass-dial" viewBox="0 0 320 320" role="img" aria-label="Compass dial"><circle cx="160" cy="160" r="155" fill="none" stroke="var(--brass)" stroke-width="1.5"/><circle cx="160" cy="160" r="148" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".6"/><circle cx="160" cy="160" r="140" fill="var(--dial-bg)"/><g id="compass-ticks"></g><g id="compass-labels"></g><g id="celestial-markers"></g><g id="waypoint-marker" style="display:none"><circle r="6" fill="var(--accent-cyan)" stroke="var(--brass)" stroke-width="1"/><text y="-12" text-anchor="middle" fill="var(--accent-cyan)" font-size="9" font-family="Inter,sans-serif">WP</text></g><g id="compass-needle"><polygon points="160,40 152,160 168,160" fill="var(--brass)" opacity=".9"/><polygon points="160,280 152,160 168,160" fill="var(--brass-dim)" opacity=".6"/><circle cx="160" cy="160" r="8" fill="var(--brass)" stroke="var(--bg)" stroke-width="1"/><circle cx="160" cy="160" r="3" fill="var(--bg)"/></g></svg><div class="heading-readout"><span id="heading-deg" class="heading-deg">---°</span><span id="heading-card" class="heading-card">—</span></div></div><button id="enable-compass" class="btn btn-primary">Enable Compass</button><button id="calibrate-compass" class="btn btn-secondary" style="display:none">Calibrate</button></div><span id="compass-status" class="status-msg" role="status" aria-live="polite">Not yet activated</span></div></div></section>
+  <aside class="adsense-slot" aria-label="Advertisement"></aside>
   <section class="panel" aria-labelledby="tilt-heading"><div class="panel-frame"><h2 id="tilt-heading" class="panel-title"><span class="panel-icon">◈</span> Tilt Meter</h2><div class="panel-body"><div class="tilt-wrap"><svg id="tilt-gauge" class="tilt-gauge" viewBox="0 0 200 200" role="img" aria-label="Bubble level"><circle cx="100" cy="100" r="95" fill="var(--dial-bg)" stroke="var(--brass)" stroke-width="1.5"/><line x1="10" y1="100" x2="190" y2="100" stroke="var(--brass)" stroke-width=".5" opacity=".4"/><line x1="100" y1="10" x2="100" y2="190" stroke="var(--brass)" stroke-width=".5" opacity=".4"/><circle cx="100" cy="100" r="70" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".3"/><circle cx="100" cy="100" r="45" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".3"/><circle cx="100" cy="100" r="20" fill="none" stroke="var(--brass)" stroke-width=".5" opacity=".3"/><circle id="tilt-bubble" cx="100" cy="100" r="10" fill="var(--brass)" opacity=".8"/></svg><div class="tilt-readout"><div class="tilt-row"><span class="tilt-label">Pitch</span><span id="pitch-val" class="tilt-val">0.0°</span></div><div class="tilt-row"><span class="tilt-label">Roll</span><span id="roll-val" class="tilt-val">0.0°</span></div><div class="tilt-row tilt-slope"><span class="tilt-label">Slope</span><span id="slope-val" class="tilt-val">0.0°</span></div></div></div><span id="tilt-status" class="status-msg" role="status" aria-live="polite">Awaiting sensor</span></div></div></section>
   <section class="panel" aria-labelledby="gps-heading"><div class="panel-frame"><h2 id="gps-heading" class="panel-title"><span class="panel-icon">◈</span> GPS Instruments</h2><div class="panel-body"><div class="gps-grid"><div class="gps-cell"><span class="gps-label">Latitude</span><span id="gps-lat" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Longitude</span><span id="gps-lon" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Altitude</span><span id="gps-alt" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Accuracy</span><span id="gps-acc" class="gps-val">—</span></div><div class="gps-cell"><span class="gps-label">Speed</span><span id="gps-speed" class="gps-val">—</span></div></div><div class="gps-controls"><button id="enable-gps" class="btn btn-primary">Enable Location</button><button id="unit-toggle" class="btn btn-secondary"><span id="unit-label">Metric</span></button><button id="copy-coords" class="btn btn-ghost">Copy</button></
         span></div><span id="gps-status" class="status-msg" role="status" aria-live="polite">Not yet activated</span><span id="copy-feedback" class="copy-feedback" role="status" aria-live="polite"></span></div></div></section>
   <section class="panel" aria-labelledby="nav-heading"><div class="panel-frame"><h2 id="nav-heading" class="panel-title"><span class="panel-icon">◈</span> Distance & Bearing</h2><div class="panel-body"><div class="nav-inputs"><div class="input-group"><label for="target-lat">Target Latitude</label><input type="number" id="target-lat" step="any" placeholder="51.5074" inputmode="decimal"></div><div class="input-group"><label for="target-lon">Target Longitude</label><input type="number" id="target-lon" step="any" placeholder="-0.1278" inputmode="decimal"></div></div><div class="nav-controls"><button id="plot-course" class="btn btn-primary">Plot Course</button><button id="clear-waypoint" class="btn btn-secondary">Clear Waypoint</button></div><div id="nav-results" class="nav-results" style="display:none"><div class="nav-result-row"><span class="nav-label">Distance</span><span id="nav-dist" class="nav-val">—</span></div><div class="nav-result-row"><span class="nav-label">Bearing</span><span id="nav-bearing" class="nav-val">—</span></div></div><span id="nav-status" class="status-msg" role="status" aria-live="polite"></span></div></div></section>
   <section class="panel" aria-labelledby="celestial-heading"><div class="panel-frame"><h2 id="celestial-heading" class="panel-title"><span class="panel-icon">◈</span> Sun & Moon</h2><div class="panel-body"><div class="celestial-grid"><div class="celestial-block"><h3 class="celestial-title">☀ Sun</h3><div class="celestial-row"><span class="c-label">Azimuth</span><span id="sun-az" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Elevation</span><span id="sun-el" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Sunrise</span><span id="sunrise" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Sunset</span><span id="sunset" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Solar Noon</span><span id="solar-noon" class="c-val">—</span></div></div><div class="celestial-block"><h3 class="celestial-title">☽ Moon</h3><div class="celestial-row"><span class="c-label">Azimuth</span><span id="moon-az" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Elevation</span><span id="moon-el" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Moonrise</span><span id="moonrise" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Moonset</span><span id="moonset" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Phase</span><span id="moon-phase" class="c-val">—</span></div><div class="celestial-row"><span class="c-label">Illumination</span><span id="moon-illum" class="c-val">—</span></div></div></div><span id="celestial-status" class="status-msg" role="status" aria-live="polite">Awaiting location</span></div></div></section>
+  <aside class="adsense-slot" aria-label="Advertisement"></aside>
   <section class="panel" aria-labelledby="faq-heading"><div class="panel-frame"><h2 id="faq-heading" class="panel-title"><span class="panel-icon">◈</span> FAQ</h2><div class="panel-body"><div class="faq-list"><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-1"><span>Is my data tracked?</span><span class="faq-chevron">▾</span></button><div id="faq-1" class="faq-answer" role="region" aria-hidden="true"><p>No. Everything is computed entirely within your browser on your own device. Nothing is transmitted to any server, stored externally, or tracked in any way. This application is fully offline-capable and leaves no trace.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-2"><span>What sensors are required?</span><span class="faq-chevron">▾</span></button><div id="faq-2" class="faq-answer" role="region" aria-hidden="true"><p>The compass requires a magnetometer. The tilt meter requires an accelerometer. GPS requires the Geolocation API. These are standard on smartphones. Desktop browsers lack orientation sensors — the compass then shows a fixed north-up display. All features degrade gracefully.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-3"><span>How accurate is it?</span><span class="faq-chevron">▾</span></button><div id="faq-3" class="faq-answer" role="region" aria-hidden="true"><p>Accuracy depends on your device hardware. Phone magnetometers typically achieve ±2–5° when calibrated. GPS varies from ±3 m (open sky) to ±50 m (urban). Sun and moon positions are computed with sub-arcminute precision using SunCalc — far beyond practical observation needs.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-4"><span>Does it work offline?</span><span class="faq-chevron">▾</span></button><div id="faq-4" class="faq-answer" role="region" aria-hidden="true"><p>Yes. Once loaded, the page has no network dependency. All calculations run locally. The only external request is for Google Fonts, and if that fails, the page falls back to system fonts automatically.</p></div></div><div class="faq-item"><button class="faq-question" aria-expanded="false" aria-controls="faq-5"><span>How do I calibrate the compass?</span><span class="faq-chevron">▾</span></button><div id="faq-5" class="faq-answer" role="region" aria-hidden="true"><p>If the heading seems inaccurate, move your device in a figure-8 motion several times to recalibrate the magnetometer — this is a hardware-level calibration handled by your OS. Avoid nearby metal objects and magnetic cases. You can also tap the Calibrate button to reset the offset.</p></div></div></div></div></div></section>
 </main>
 <footer class="site-footer">
   <svg class="footer-logo" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/><polygon points="32,4 38,28 32,36 26,28" fill="var(--brass)"/><polygon points="32,60 38,36 32,28 26,36" fill="var(--brass-dim)"/><polygon points="4,32 28,26 36,32 28,38" fill="var(--brass-dim)"/><polygon points="60,32 36,26 28,32 36,38" fill="var(--brass-dim)"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
   <p class="footer-text">LIVE COMPASS — Every calculation runs on your device. No data leaves your browser.</p>
+  <nav class="footer-nav" aria-label="Footer">
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="terms.html">Terms of Service</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="sitemap.xml">Sitemap</a>
+  </nav>
   <p class="footer-copy">&copy; <span id="year"></span> Live Compass. Private by design.</p>
 </footer>
 <script>
@@ -326,7 +354,6 @@ function updateHeadingReadout(h){var d=document.getElementById('heading-deg'),c=
 function freezeNorth(){rotateNeedle(0);updateHeadingReadout(0)}
 function updateTiltDisplay(){var pitch=state.pitch,roll=state.roll;var slope=Math.sqrt(pitch*pitch+roll*roll);var p=document.getElementById('pitch-val'),r=document.getElementById('roll-val'),s=document.getElementById('slope-val');if(p)p.textContent=pitch.toFixed(1)+'°';if(r)r.textContent=roll.toFixed(1)+'°';if(s)s.textContent=slope.toFixed(1)+'°';var b=document.getElementById('tilt-bubble');if(b){var max=75;var xOff=Math.max(-max,Math.min(max,roll*(max/90)));var yOff=Math.max(-max,Math.min(max,pitch*(max/180)));b.setAttribute('cx',100+xOff);b.setAttribute('cy',100+yOff)}var t=document.getElementById('tilt-status');if(t){if(state.compassPermission==='granted'){t.textContent='Tilt sensor active';t.className='status-msg success'}else if(state.compassPermission==='unsupported'){t.textContent='No tilt sensor detected';t.className='status-msg'}}}
 function setGpsStatus(s){var el=document.getElementById('gps-status');if(!el)return;var msgs={pending:'Not yet activated',granted:'Location active',denied:'Location permission denied',unsupported:'Geolocation not supported on this device'};el.textContent=msgs[s]||'';el.className='status-msg'+(s==='denied'?' error':(s==='granted'?' success':''));state.gpsPermission=s}
-document.getElementById('turn-on-location').onclick=function(){document.getElementById('enable-gps').click()}
 document.getElementById('enable-gps').onclick=function(){if(!('geolocation' in navigator)){setGpsStatus('unsupported');return}navigator.geolocation.watchPosition(onGpsSuccess,onGpsError,{enableHighAccuracy:true,maximumAge:5e3,timeout:15e3})};
 function onGpsSuccess(pos){state.lat=pos.coords.latitude;state.lon=pos.coords.longitude;state.altitude=pos.coords.altitude;state.accuracy=pos.coords.accuracy;state.speed=pos.coords.speed;setGpsStatus('granted');updateGpsDisplay();updateCelestialData()}
 function onGpsError(err){var el=document.getElementById('gps-status');if(err.code===err.PERMISSION_DENIED){if(el){el.textContent='GPS permission denied. Please enable location access in your browser settings.';el.className='status-msg error'}setGpsStatus('denied')}else if(err.code===err.POSITION_UNAVAILABLE){if(el){el.textContent='GPS position unavailable. Move to an area with clear sky view.';el.className='status-msg error'}setGpsStatus('denied')}else if(err.code===err.TIMEOUT){if(el){el.textContent='GPS request timed out. Retrying...';el.className='status-msg'}}}
@@ -361,26 +388,62 @@ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded'
 })();
 </script>
 <script>
-/* ============================================================
-   ZOOM BLOCKER — locks viewport to native mobile behavior
-   ============================================================ */
-(function(){
-  'use strict';
-  var lastTap = 0;
-  document.addEventListener('touchend', function(e){
-    var now = Date.now();
-    if (now - lastTap < 300) e.preventDefault();
-    lastTap = now;
-  }, {passive:false});
-  document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, {passive:false});
-  document.addEventListener('gesturechange', function(e){ e.preventDefault(); }, {passive:false});
-  document.addEventListener('gestureend', function(e){ e.preventDefault(); }, {passive:false});
-  document.addEventListener('wheel', function(e){
-    if (e.ctrlKey) e.preventDefault();
-  }, {passive:false});
-  document.addEventListener('touchmove', function(e){
-    if (e.touches.length > 1) e.preventDefault();
-  }, {passive:false});
+(function () {
+    var doc = document;
+
+    // 1. Block double-tap zoom
+    var lastTouchEnd = 0;
+    doc.addEventListener('touchend', function (e) {
+        var now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            if (e.cancelable) e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, { passive: false });
+
+    // 2. Block iOS gesture events (Safari-specific)
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (name) {
+        doc.addEventListener(name, function (e) {
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+    });
+
+    // 3. Block multi-touch pinch (Android + iOS)
+    doc.addEventListener('touchmove', function (e) {
+        if (e.touches.length > 1) {
+            if (e.cancelable) e.preventDefault();
+        }
+    }, { passive: false });
+
+    // 4. Block Ctrl + wheel zoom (desktop)
+    doc.addEventListener('wheel', function (e) {
+        if (e.ctrlKey || e.metaKey) {
+            if (e.cancelable) e.preventDefault();
+        }
+    }, { passive: false });
+
+    // 5. THE KEY FIX — Reset visual viewport scale on iOS Safari
+    if (window.visualViewport) {
+        var vv = window.visualViewport;
+        var resetScale = function () {
+            if (vv.scale !== 1) {
+                // Force zoom back to 1 by nudging the viewport
+                doc.documentElement.style.zoom = '1';
+                doc.body.style.zoom = '1';
+                vv.scale = 1;
+            }
+        };
+        vv.addEventListener('resize', resetScale);
+        vv.addEventListener('scroll', resetScale);
+    }
+
+    // 6. Belt-and-braces — reset document zoom on every touchmove
+    var resetZoom = function () {
+        doc.documentElement.style.zoom = '1';
+        doc.body.style.zoom = '1';
+    };
+    doc.addEventListener('touchstart', resetZoom, { passive: true });
+    doc.addEventListener('touchend', resetZoom, { passive: true });
 })();
 </script>
 </body>
